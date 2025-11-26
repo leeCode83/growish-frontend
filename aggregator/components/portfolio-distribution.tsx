@@ -1,7 +1,7 @@
 const distributions = [
-  { token: "SOL", protocol: "Marinade", amount: "$6,300.00", percentage: 40, apy: "10.2%", risk: 2 },
-  { token: "USDC", protocol: "Solend", amount: "$5,512.50", percentage: 35, apy: "9.8%", risk: 4 },
-  { token: "ETH", protocol: "Lido", amount: "$3,937.50", percentage: 25, apy: "9.2%", risk: 6 },
+  { token: "USDC", protocol: "Morpho", amount: "$6,300.00", percentage: 40, apy: "10.3%", risk: 2 },
+  { token: "USDT", protocol: "Aave V3", amount: "$5,512.50", percentage: 35, apy: "8.5%", risk: 2 },
+  { token: "DAI", protocol: "Spark", amount: "$3,937.50", percentage: 25, apy: "9.2%", risk: 3 },
 ]
 
 const getBarColor = (percentage: number, index: number) => {

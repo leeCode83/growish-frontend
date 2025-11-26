@@ -15,9 +15,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Growish | Next-Gen AI Yield Aggregator",
-  description:
-    "Maximize your DeFi yields with AI-powered portfolio optimization and one-click zapping across protocols.",
+  title: "Growish | Stablecoin Yield Aggregator on Lisk",
+  description: "Maximize your stablecoin yields on Lisk with AI-powered portfolio optimization across DeFi protocols.",
   generator: "v0.app",
   icons: {
     icon: [

@@ -1,9 +1,9 @@
 import type React from "react"
 export function StatsCards() {
   const stats = [
-    { label: "Total Balance", value: "$15,378.00", change: "+12.4%" },
-    { label: "Current APY", value: "9.80%", change: "+0.5%" },
-    { label: "Total Earnings", value: "$1,378.00", change: "+$127" },
+    { label: "Total Stablecoins", value: "$15,750.00", change: "+8.2%" },
+    { label: "Weighted APY", value: "8.95%", change: "+0.3%" },
+    { label: "Total Earnings", value: "$1,205.00", change: "+$89" },
   ]
 
   return (

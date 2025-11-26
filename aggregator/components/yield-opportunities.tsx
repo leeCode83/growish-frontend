@@ -2,40 +2,44 @@
 
 const opportunities = [
   {
-    token: "SOL",
-    protocol: "Marinade",
-    apy: "12.4%",
+    token: "USDC",
+    protocol: "Aave V3",
+    apy: "8.5%",
     risk: "low",
     tvl: "$45.00M",
-    icon: "◎",
-    color: "from-purple-500 to-fuchsia-500",
+    icon: "$",
+    color: "from-blue-500 to-cyan-500",
+    chain: "Lisk Sepolia",
+  },
+  {
+    token: "USDT",
+    protocol: "Compound V3",
+    apy: "7.8%",
+    risk: "low",
+    tvl: "$32.00M",
+    icon: "₮",
+    color: "from-emerald-500 to-teal-500",
+    chain: "Lisk Sepolia",
+  },
+  {
+    token: "DAI",
+    protocol: "Spark Protocol",
+    apy: "9.2%",
+    risk: "low",
+    tvl: "$28.50M",
+    icon: "◈",
+    color: "from-amber-500 to-yellow-500",
+    chain: "Lisk Sepolia",
   },
   {
     token: "USDC",
-    protocol: "Solend",
-    apy: "8.7%",
-    risk: "low",
-    tvl: "$120.00M",
-    icon: "$",
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    token: "ETH",
-    protocol: "Lido",
-    apy: "15.2%",
+    protocol: "Morpho",
+    apy: "10.3%",
     risk: "med",
-    tvl: "$32.00M",
-    icon: "Ξ",
-    color: "from-indigo-500 to-purple-500",
-  },
-  {
-    token: "RAY",
-    protocol: "Raydium",
-    apy: "22.8%",
-    risk: "high",
     tvl: "$18.00M",
-    icon: "☼",
-    color: "from-amber-500 to-orange-500",
+    icon: "$",
+    color: "from-purple-500 to-indigo-500",
+    chain: "Lisk Sepolia",
   },
 ]
 
@@ -77,7 +81,12 @@ export function YieldOpportunities() {
                   <span className="font-semibold text-white">{opp.token}</span>
                   <span className="text-white/40 text-sm">• {opp.protocol}</span>
                 </div>
-                <p className="text-white/40 text-xs">TVL: {opp.tvl}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-[10px] font-medium">
+                    Lisk Sepolia
+                  </span>
+                  <p className="text-white/40 text-xs">TVL: {opp.tvl}</p>
+                </div>
               </div>
 
               {/* APY & Risk */}

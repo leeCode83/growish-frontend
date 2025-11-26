@@ -38,8 +38,8 @@ export function AiInsightCard() {
             </span>
           </div>
           <p className="text-white/90 font-sans text-base leading-relaxed">
-            Reallocating to <span className="text-emerald-400 font-semibold">Solend</span> could increase APY by{" "}
-            <span className="text-emerald-400 font-semibold">4.2%</span>
+            Shifting <span className="text-emerald-400 font-semibold">USDC</span> to Morpho on Lisk Sepolia could increase APY by{" "}
+            <span className="text-emerald-400 font-semibold">1.8%</span>
           </p>
           <button className="mt-4 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-all hover:border-emerald-500/50">
             Apply Suggestion
