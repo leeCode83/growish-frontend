@@ -1,45 +1,29 @@
 "use client"
 
+import { VaultType } from "@/lib/types"
+
 const opportunities = [
   {
     token: "USDC",
     protocol: "Aave V3",
-    apy: "8.5%",
+    apy: "4.2%",
     risk: "low",
-    tvl: "$45.00M",
+    tvl: "$8.2B",
     icon: "$",
     color: "from-blue-500 to-cyan-500",
     chain: "Lisk Sepolia",
-  },
-  {
-    token: "USDT",
-    protocol: "Compound V3",
-    apy: "7.8%",
-    risk: "low",
-    tvl: "$32.00M",
-    icon: "₮",
-    color: "from-emerald-500 to-teal-500",
-    chain: "Lisk Sepolia",
-  },
-  {
-    token: "DAI",
-    protocol: "Spark Protocol",
-    apy: "9.2%",
-    risk: "low",
-    tvl: "$28.50M",
-    icon: "◈",
-    color: "from-amber-500 to-yellow-500",
-    chain: "Lisk Sepolia",
+    vaultType: VaultType.CONSERVATIVE,
   },
   {
     token: "USDC",
-    protocol: "Morpho",
-    apy: "10.3%",
+    protocol: "Compound V3",
+    apy: "5.8%",
     risk: "med",
-    tvl: "$18.00M",
+    tvl: "$3.5B",
     icon: "$",
-    color: "from-purple-500 to-indigo-500",
+    color: "from-emerald-500 to-teal-500",
     chain: "Lisk Sepolia",
+    vaultType: VaultType.AGGRESSIVE,
   },
 ]
 

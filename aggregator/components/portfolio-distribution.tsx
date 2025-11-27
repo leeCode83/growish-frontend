@@ -1,11 +1,13 @@
+import { VaultType } from "@/lib/types"
+
 const distributions = [
-  { token: "USDC", protocol: "Morpho", amount: "$6,300.00", percentage: 40, apy: "10.3%", risk: 2 },
-  { token: "USDT", protocol: "Aave V3", amount: "$5,512.50", percentage: 35, apy: "8.5%", risk: 2 },
-  { token: "DAI", protocol: "Spark", amount: "$3,937.50", percentage: 25, apy: "9.2%", risk: 3 },
+  { token: "USDC", vault: "Conservative Vault", vaultType: VaultType.CONSERVATIVE, amount: "$6,300.00", percentage: 40, apy: "4.2%", risk: 2 },
+  { token: "USDC", vault: "Balanced Vault", vaultType: VaultType.BALANCED, amount: "$5,512.50", percentage: 35, apy: "5.5%", risk: 3 },
+  { token: "USDC", vault: "Aggressive Vault", vaultType: VaultType.AGGRESSIVE, amount: "$3,937.50", percentage: 25, apy: "6.8%", risk: 4 },
 ]
 
 const getBarColor = (percentage: number, index: number) => {
-  const colors = ["from-emerald-500 to-emerald-400", "from-cyan-500 to-cyan-400", "from-purple-500 to-purple-400"]
+  const colors = ["from-emerald-500 to-emerald-400", "from-cyan-500 to-cyan-400", "from-orange-500 to-orange-400"]
   return colors[index % colors.length]
 }
 
@@ -24,11 +26,11 @@ export function PortfolioDistribution() {
 
       <div className="space-y-4">
         {distributions.map((item, index) => (
-          <div key={item.token} className="space-y-2">
+          <div key={`${item.vault}-${index}`} className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="font-semibold text-white">{item.token}</span>
-                <span className="text-white/30 text-sm">{item.protocol}</span>
+                <span className="text-white/30 text-sm">{item.vault}</span>
                 <span className="px-2 py-0.5 rounded-full bg-white/5 text-white/50 text-[10px] font-medium">
                   Risk: {item.risk}/10
                 </span>

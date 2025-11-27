@@ -3,17 +3,17 @@
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 const data = [
-  { date: "Jan", value: 12000 },
-  { date: "Feb", value: 11800 },
-  { date: "Mar", value: 13200 },
-  { date: "Apr", value: 12800 },
-  { date: "May", value: 14100 },
-  { date: "Jun", value: 13600 },
-  { date: "Jul", value: 14800 },
-  { date: "Aug", value: 15200 },
-  { date: "Sep", value: 14600 },
-  { date: "Oct", value: 15800 },
-  { date: "Nov", value: 15378 },
+  { date: "Jan", value: 10000 },
+  { date: "Feb", value: 10200 },
+  { date: "Mar", value: 10800 },
+  { date: "Apr", value: 11200 },
+  { date: "May", value: 11800 },
+  { date: "Jun", value: 12400 },
+  { date: "Jul", value: 13100 },
+  { date: "Aug", value: 13800 },
+  { date: "Sep", value: 14200 },
+  { date: "Oct", value: 14900 },
+  { date: "Nov", value: 15750 },
 ]
 
 export function PortfolioChart() {

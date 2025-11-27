@@ -19,18 +19,18 @@ export default function Transparency() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-white/5 border-white/10 p-6">
               <p className="text-white/60 text-sm mb-2">Total Value Locked</p>
-              <p className="text-3xl font-bold">$95.80M</p>
-              <p className="text-sm text-emerald-400 mt-1">+12.4% this month</p>
+              <p className="text-3xl font-bold">$11.7B</p>
+              <p className="text-sm text-emerald-400 mt-1">Combined across protocols</p>
             </Card>
             <Card className="bg-white/5 border-white/10 p-6">
               <p className="text-white/60 text-sm mb-2">Active Protocols</p>
-              <p className="text-3xl font-bold">8</p>
-              <p className="text-sm text-white/60 mt-1">Across 3 chains</p>
+              <p className="text-3xl font-bold">2</p>
+              <p className="text-sm text-white/60 mt-1">Aave V3 & Compound V3</p>
             </Card>
             <Card className="bg-white/5 border-white/10 p-6">
               <p className="text-white/60 text-sm mb-2">Average APY</p>
-              <p className="text-3xl font-bold">11.5%</p>
-              <p className="text-sm text-cyan-400 mt-1">Risk-adjusted</p>
+              <p className="text-3xl font-bold">5.0%</p>
+              <p className="text-sm text-cyan-400 mt-1">USDC risk-adjusted</p>
             </Card>
           </div>
 
@@ -45,26 +45,29 @@ export default function Transparency() {
                 <AccordionItem value="aave" className="border-white/10">
                   <AccordionTrigger className="hover:no-underline">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500" />
                       <div className="text-left">
                         <p className="font-medium">Aave V3</p>
-                        <p className="text-sm text-white/60">Lending Protocol • $32.00M TVL</p>
+                        <p className="text-sm text-white/60">Lending Protocol • $8.2B TVL</p>
                       </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="pl-11 pt-2 space-y-2 text-sm text-white/80">
                       <p>
-                        <span className="text-white/60">Contract:</span> 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2
+                        <span className="text-white/60">Contract:</span> 0x0000000000000000000000000000000000000000
                       </p>
                       <p>
-                        <span className="text-white/60">Chain:</span> Ethereum Mainnet
+                        <span className="text-white/60">Chain:</span> Lisk Sepolia
                       </p>
                       <p>
-                        <span className="text-white/60">Last Audit:</span> Trail of Bits (Oct 2024)
+                        <span className="text-white/60">Last Audit:</span> OpenZeppelin, Trail of Bits, ABDK (2024-Q2)
                       </p>
                       <p>
-                        <span className="text-white/60">Risk Score:</span> 2/10 (Very Low)
+                        <span className="text-white/60">Risk Score:</span> 2.5/10 (Very Low)
+                      </p>
+                      <p>
+                        <span className="text-white/60">USDC APY:</span> 4.2%
                       </p>
                     </div>
                   </AccordionContent>
@@ -76,51 +79,26 @@ export default function Transparency() {
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500" />
                       <div className="text-left">
                         <p className="font-medium">Compound V3</p>
-                        <p className="text-sm text-white/60">Lending Protocol • $28.50M TVL</p>
+                        <p className="text-sm text-white/60">Lending Protocol • $3.5B TVL</p>
                       </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="pl-11 pt-2 space-y-2 text-sm text-white/80">
                       <p>
-                        <span className="text-white/60">Contract:</span> 0xc3d688B66703497DAA19211EEdff47f25384cdc3
+                        <span className="text-white/60">Contract:</span> 0x0000000000000000000000000000000000000000
                       </p>
                       <p>
-                        <span className="text-white/60">Chain:</span> Ethereum Mainnet
+                        <span className="text-white/60">Chain:</span> Lisk Sepolia
                       </p>
                       <p>
-                        <span className="text-white/60">Last Audit:</span> OpenZeppelin (Sep 2024)
+                        <span className="text-white/60">Last Audit:</span> OpenZeppelin, ChainSecurity (2024-Q1)
                       </p>
                       <p>
-                        <span className="text-white/60">Risk Score:</span> 3/10 (Low)
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="curve" className="border-white/10">
-                  <AccordionTrigger className="hover:no-underline">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500" />
-                      <div className="text-left">
-                        <p className="font-medium">Curve Finance</p>
-                        <p className="text-sm text-white/60">DEX & Stablecoin • $23.30M TVL</p>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="pl-11 pt-2 space-y-2 text-sm text-white/80">
-                      <p>
-                        <span className="text-white/60">Contract:</span> 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7
+                        <span className="text-white/60">Risk Score:</span> 3.0/10 (Low)
                       </p>
                       <p>
-                        <span className="text-white/60">Chain:</span> Ethereum Mainnet
-                      </p>
-                      <p>
-                        <span className="text-white/60">Last Audit:</span> ChainSecurity (Nov 2024)
-                      </p>
-                      <p>
-                        <span className="text-white/60">Risk Score:</span> 4/10 (Medium-Low)
+                        <span className="text-white/60">USDC APY:</span> 5.8%
                       </p>
                     </div>
                   </AccordionContent>

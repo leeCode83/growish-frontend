@@ -38,11 +38,11 @@ export function AiInsightCard() {
             </span>
           </div>
           <p className="text-white/90 font-sans text-base leading-relaxed">
-            Shifting <span className="text-emerald-400 font-semibold">USDC</span> to Morpho on Lisk Sepolia could increase APY by{" "}
-            <span className="text-emerald-400 font-semibold">1.8%</span>
+            Moving <span className="text-emerald-400 font-semibold">$3,200 USDC</span> from Conservative to Balanced Vault could increase APY by{" "}
+            <span className="text-emerald-400 font-semibold">1.3%</span> while maintaining reasonable risk.
           </p>
           <button className="mt-4 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-all hover:border-emerald-500/50">
-            Apply Suggestion
+            Rebalance Vaults
           </button>
         </div>
       </div>
