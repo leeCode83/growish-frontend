@@ -3,6 +3,28 @@
 ## Overview
 Successfully integrated @xellar/kit, wagmi, and viem for Web3 functionality in the Growish DeFi Aggregator application with batch deposit system.
 
+## Contract Initialization
+
+⚠️ **IMPORTANT**: Before users can deposit or withdraw, the Router contract must be initialized with vault addresses. This is a **one-time setup** that must be performed by the contract owner.
+
+### Initialize Router (Contract Owner Only)
+
+```bash
+cd aggregator
+npx tsx scripts/initialize-router.ts
+```
+
+See [scripts/README.md](./scripts/README.md) for detailed initialization instructions.
+
+### Verify Initialization
+
+Check the "Router Contract Status" card on the dashboard to verify all vaults are registered. The status should show:
+- ✅ Conservative Vault (RiskLevel 0) - Initialized
+- ✅ Balanced Vault (RiskLevel 1) - Initialized  
+- ✅ Aggressive Vault (RiskLevel 2) - Initialized
+
+If not initialized, all deposit/withdraw transactions will revert.
+
 ## Contract Architecture
 
 ### Smart Contract Addresses (Lisk Sepolia Testnet)

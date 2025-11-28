@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, type Config, useWriteContract } from "wagmi";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { XellarKitProvider, defaultConfig, darkTheme, useConnectModal } from "@xellar/kit";
-import { liskSepolia } from "@/lib/client-config";
+import { liskSepolia, getExplorerUrl } from "@/lib/client-config";
 import { useToast } from "@/hooks/use-toast";
 import { handleWalletError, handleTransactionError, validateAmount } from "@/lib/errors";
 import { CONTRACTS, ROUTER_ABI, MOCK_USDC_ABI } from "@/lib/contracts";

@@ -12,7 +12,9 @@ import {
   useTokenAllowance,
   useUserBalance,
   useAssetAPY,
-  useFormatTokenAmount
+  useFormatTokenAmount,
+  useVaultAddress,
+  useMinDepositAmount
 } from '@/hooks/useContracts'
 import { useWallet } from '@/components/Web3Provider'
 import { CONTRACTS, SUPPORTED_ASSETS } from '@/lib/contracts'
@@ -42,6 +44,11 @@ export function VaultInteraction({ vaultType, assetAddress, assetSymbol, assetDe
   const { data: vaultBalance } = useUserBalance(address, assetAddress)
   const { data: allowance } = useTokenAllowance(assetAddress, address)
   const { data: apy } = useAssetAPY(assetAddress)
+  const { data: vaultAddress } = useVaultAddress(vaultType)
+  const { data: minDepositAmount } = useMinDepositAmount()
+  
+  // Check if vault is initialized (not zero address)
+  const isVaultInitialized = vaultAddress && vaultAddress !== '0x0000000000000000000000000000000000000000'
 
   // Calculate if approval is needed
   const needsApproval = depositAmount && allowance && parseUnits(depositAmount, assetDecimals) > allowance
@@ -110,12 +117,15 @@ export function VaultInteraction({ vaultType, assetAddress, assetSymbol, assetDe
   const isDepositValid = depositAmount && 
     tokenBalance && 
     parseUnits(depositAmount, assetDecimals) <= tokenBalance &&
-    parseFloat(depositAmount) > 0
+    parseFloat(depositAmount) > 0 &&
+    isVaultInitialized &&
+    (!minDepositAmount || parseUnits(depositAmount, assetDecimals) >= minDepositAmount)
 
   const isWithdrawValid = withdrawAmount && 
     vaultBalance && 
     parseUnits(withdrawAmount, assetDecimals) <= vaultBalance &&
-    parseFloat(withdrawAmount) > 0
+    parseFloat(withdrawAmount) > 0 &&
+    isVaultInitialized
 
   if (!address) {
     return (
@@ -196,15 +206,32 @@ export function VaultInteraction({ vaultType, assetAddress, assetSymbol, assetDe
                 onChange={(e) => setDepositAmount(e.target.value)}
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
               />
+              {minDepositAmount && (
+                <p className="text-xs text-white/60">
+                  Minimum deposit: {formatUnits(minDepositAmount, assetDecimals)} {assetSymbol}
+                </p>
+              )}
             </div>
 
+            {/* Vault not initialized warning */}
+            {!isVaultInitialized && (
+              <Alert className="bg-orange-500/10 border-orange-500/30">
+                <AlertCircle className="h-4 w-4 text-orange-400" />
+                <AlertDescription className="text-orange-200">
+                  This vault is not initialized yet. The contract owner needs to register the vault address.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Error states */}
-            {depositAmount && !isDepositValid && (
+            {depositAmount && !isDepositValid && isVaultInitialized && (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   {parseFloat(depositAmount) <= 0 
                     ? 'Amount must be greater than 0'
+                    : minDepositAmount && parseUnits(depositAmount, assetDecimals) < minDepositAmount
+                    ? `Minimum deposit is ${formatUnits(minDepositAmount, assetDecimals)} ${assetSymbol}`
                     : 'Insufficient balance'
                   }
                 </AlertDescription>

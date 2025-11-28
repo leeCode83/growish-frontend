@@ -8,6 +8,7 @@ import { FloatingNav } from "@/components/floating-nav"
 import { DashboardStats } from "@/components/DashboardStats"
 import { VaultInteractionList } from "@/components/VaultInteraction"
 import { TestTokenFaucet } from "@/components/TestTokenFaucet"
+import { ContractInitCheck } from "@/components/ContractInitCheck"
 
 export default function Dashboard() {
   return (
@@ -16,6 +17,11 @@ export default function Dashboard() {
         {/* Web3 Dashboard Stats */}
         <div className="mb-8">
           <DashboardStats />
+        </div>
+
+        {/* Contract Initialization Check */}
+        <div className="mb-8">
+          <ContractInitCheck />
         </div>
 
         {/* Test Token Faucet */}
