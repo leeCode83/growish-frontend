@@ -84,7 +84,9 @@ function WalletStateController({ children }: { children: ReactNode }) {
   const { writeContractAsync } = useWriteContract();
   const { open: openConnectModal } = useConnectModal();
 
-  const balance = balanceData?.formatted ?? "0";
+  const balance = balanceData?.value 
+    ? (Number(balanceData.value) / 10 ** (balanceData.decimals ?? 18)).toFixed(4)
+    : "0.0000";  // const balance = balanceData?.formatted ?? "0";
 
   // Monitor wallet connection status
   useEffect(() => {
