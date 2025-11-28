@@ -15,9 +15,45 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Growish | Stablecoin Yield Aggregator on Lisk",
-  description: "Maximize your stablecoin yields on Lisk with AI-powered portfolio optimization across DeFi protocols.",
+  title: "Growish | DeFi Yield Aggregator - Maximize Your Returns",
+  description: "Maximize your DeFi yields with intelligent vault strategies. Automated optimization across Aave V3 and Compound V3 protocols. Non-custodial, battle-tested, and transparent.",
+  keywords: ["DeFi", "yield aggregator", "Aave", "Compound", "stablecoin", "crypto", "blockchain", "yield farming", "passive income"],
+  authors: [{ name: "Growish" }],
   generator: "v0.app",
+  metadataBase: new URL('https://growish.finance'),
+  openGraph: {
+    title: "Growish | DeFi Yield Aggregator",
+    description: "Maximize your DeFi yields with intelligent vault strategies. Automated optimization across Aave V3 and Compound V3.",
+    url: "https://growish.finance",
+    siteName: "Growish",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Growish DeFi Yield Aggregator",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Growish | DeFi Yield Aggregator",
+    description: "Maximize your DeFi yields with intelligent vault strategies.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       {
@@ -49,8 +85,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
-      <body className={`font-sans antialiased`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body className={`font-sans antialiased`} suppressHydrationWarning>
         {children}
         <Analytics />
       </body>
