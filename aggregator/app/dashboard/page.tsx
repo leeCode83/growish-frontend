@@ -19,16 +19,6 @@ export default function Dashboard() {
           <DashboardStats />
         </div>
 
-        {/* Contract Initialization Check */}
-        <div className="mb-8">
-          <ContractInitCheck />
-        </div>
-
-        {/* Test Token Faucet */}
-        <div className="mb-8">
-          <TestTokenFaucet />
-        </div>
-
         {/* Vault Interactions */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-6">Vault Operations</h2>

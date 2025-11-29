@@ -88,7 +88,7 @@ export default function Transparency() {
                   <p className="text-sm text-white/80">Gas cost reduction per user</p>
                 </div>
                 <div className="p-4 rounded-xl bg-black/20">
-                  <p className="text-2xl font-bold text-cyan-400 mb-1">Every 6h</p>
+                  <p className="text-2xl font-bold text-cyan-400 mb-1">Every 1h</p>
                   <p className="text-sm text-white/80">Batch execution schedule</p>
                 </div>
                 <div className="p-4 rounded-xl bg-black/20">

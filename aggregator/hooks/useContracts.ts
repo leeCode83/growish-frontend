@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
-import { useReadContract, useReadContracts, useAccount } from 'wagmi'
-import { formatUnits } from 'viem'
+import { useReadContract, useReadContracts, useAccount, usePublicClient } from 'wagmi'
+import { formatUnits, parseAbiItem } from 'viem'
+import { useQuery } from '@tanstack/react-query'
 import { CONTRACTS, ROUTER_ABI, VAULT_ABI, USDC_ABI, STRATEGY_ABI, SUPPORTED_ASSETS } from '@/lib/contracts'
 import { vaultTypeToRiskLevel } from '@/lib/utils'
 
@@ -249,6 +250,127 @@ export function useVaultAPY(vaultType?: string) {
   return useStrategyAPY(strategyAddress)
 }
 
+// Hook to calculate Weighted APY based on assets in each strategy
+export function useVaultWeightedAPY(vaultType?: string) {
+  const { data: vaultAddress } = useVaultAddress(vaultType)
+
+  // 1. Get Vault Total Assets
+  const { data: totalAssets } = useVaultTotalAssets(vaultAddress)
+
+  // 2. Get Strategies (we assume max 2 for now as per other hooks)
+  const { data: strategyAddresses } = useReadContracts({
+    contracts: [
+      { address: vaultAddress, abi: VAULT_ABI, functionName: 'strategies', args: [BigInt(0)] },
+      { address: vaultAddress, abi: VAULT_ABI, functionName: 'strategies', args: [BigInt(1)] },
+    ],
+    query: { enabled: !!vaultAddress }
+  })
+
+  const strat0Addr = strategyAddresses?.[0]?.result as `0x${string}` | undefined
+  const strat1Addr = strategyAddresses?.[1]?.result as `0x${string}` | undefined
+
+  // 3. Get Strategy Data (Balance + APY)
+  const { data: stratData } = useReadContracts({
+    contracts: [
+      { address: strat0Addr, abi: STRATEGY_ABI, functionName: 'balanceOf' },
+      { address: strat0Addr, abi: STRATEGY_ABI, functionName: 'getAPY' },
+      { address: strat1Addr, abi: STRATEGY_ABI, functionName: 'balanceOf' },
+      { address: strat1Addr, abi: STRATEGY_ABI, functionName: 'getAPY' },
+    ],
+    query: {
+      enabled: !!strat0Addr || !!strat1Addr,
+      refetchInterval: 10_000
+    }
+  })
+
+  // 4. Calculate Weighted APY
+  if (!totalAssets || totalAssets === BigInt(0)) return { data: BigInt(0), isLoading: false }
+
+  let totalWeightedScore = BigInt(0)
+
+  // Strategy 0
+  if (strat0Addr && stratData?.[0]?.status === 'success' && stratData?.[1]?.status === 'success') {
+    const balance = stratData[0].result as bigint
+    const apy = stratData[1].result as bigint // Basis Points
+    totalWeightedScore += balance * apy
+  }
+
+  // Strategy 1
+  if (strat1Addr && stratData?.[2]?.status === 'success' && stratData?.[3]?.status === 'success') {
+    const balance = stratData[2].result as bigint
+    const apy = stratData[3].result as bigint // Basis Points
+    totalWeightedScore += balance * apy
+  }
+
+  // Idle assets (assume 0% APY)
+  // No need to add to score since APY is 0
+
+  const weightedAPY_BPS = totalWeightedScore / totalAssets
+
+  // Convert BPS to 1e18 scale for frontend compatibility
+  // 1 BPS = 0.01% = 0.0001
+  // We want 500 BPS (5%) to become 5 * 1e18 (so formatUnits(x, 18) = 5)
+  // 500 * 10^16 = 5 * 10^18
+  const result = weightedAPY_BPS * BigInt(10 ** 16)
+
+  return {
+    data: result,
+    isLoading: false
+  }
+}
+
+// Hook to get user's claimable assets (Shares & USDC) for all vaults
+export function useUserClaimableAssets(userAddress?: `0x${string}`) {
+  const vaultTypes = ['conservative', 'balanced', 'aggressive']
+  const vaultAddresses = [
+    CONTRACTS.VAULT_CONSERVATIVE,
+    CONTRACTS.VAULT_BALANCED,
+    CONTRACTS.VAULT_AGGRESSIVE
+  ] as const
+
+  // 1. Fetch Claimable Shares
+  const { data: claimableShares } = useReadContracts({
+    contracts: vaultTypes.map(type => ({
+      address: CONTRACTS.ROUTER as `0x${string}`,
+      abi: ROUTER_ABI,
+      functionName: 'claimableShares',
+      args: userAddress ? [userAddress, vaultTypeToRiskLevel(type)] : undefined,
+    })),
+    query: {
+      enabled: !!userAddress,
+      refetchInterval: 10_000,
+    }
+  })
+
+  // 2. Fetch Claimable USDC
+  const { data: claimableUSDC } = useReadContracts({
+    contracts: vaultTypes.map(type => ({
+      address: CONTRACTS.ROUTER as `0x${string}`,
+      abi: ROUTER_ABI,
+      functionName: 'claimableUSDC',
+      args: userAddress ? [userAddress, vaultTypeToRiskLevel(type)] : undefined,
+    })),
+    query: {
+      enabled: !!userAddress,
+      refetchInterval: 10_000,
+    }
+  })
+
+  return vaultTypes.map((type, index) => {
+    return {
+      asset: {
+        ...SUPPORTED_ASSETS[0],
+        symbol: 'USDC',
+        name: `${type.charAt(0).toUpperCase() + type.slice(1)} Vault`,
+        address: vaultAddresses[index],
+      },
+      claimableShares: claimableShares?.[index]?.result as bigint | undefined,
+      claimableUSDC: claimableUSDC?.[index]?.result as bigint | undefined,
+      vaultType: type
+    }
+  })
+}
+
 // ============================================
 // TOKEN HOOKS
 // ============================================
@@ -326,6 +448,7 @@ export function useUserBalances(userAddress?: `0x${string}`) {
     CONTRACTS.VAULT_BALANCED,
     CONTRACTS.VAULT_AGGRESSIVE
   ] as const
+  const vaultSymbols = ['cvUSDC', 'bvUSDC', 'avUSDC']
 
   // Fetch vault shares for all 3 vaults
   const { data: vaultBalances } = useReadContracts({
@@ -353,7 +476,7 @@ export function useUserBalances(userAddress?: `0x${string}`) {
     return {
       asset: {
         ...SUPPORTED_ASSETS[0], // Base it on USDC
-        symbol: 'USDC', // The underlying asset
+        symbol: vaultSymbols[index], // The underlying asset
         name: `${type.charAt(0).toUpperCase() + type.slice(1)} Vault`, // Custom name for display
         address: vaultAddresses[index], // The vault address
       },
@@ -516,21 +639,123 @@ export function useVaultStrategyDistribution(vaultAddress?: `0x${string}`) {
     }
   }
 
-  // Calculate Idle
-  const idleAmount = totalAssets > totalDeployed ? totalAssets - totalDeployed : BigInt(0)
-  if (idleAmount > BigInt(0)) {
-    strategies.push({
-      name: 'Idle (In Vault)',
-      address: vaultAddress,
-      balance: idleAmount,
-      percentage: totalAssets > BigInt(0) ? Number((idleAmount * BigInt(10000)) / totalAssets) / 100 : 0
-    })
-  }
-
   return {
     data: strategies,
     totalAssets,
     isLoading: isLoadingVault || (!!(strategy0Address || strategy1Address) && isLoadingStrategies),
     refetch: () => { }
   }
+}
+
+// ============================================
+// HISTORY HOOKS
+// ============================================
+
+export type TransactionType = 'Deposit' | 'Withdraw' | 'Claim Shares' | 'Claim USDC'
+
+export interface TransactionHistoryItem {
+  type: TransactionType
+  amount: string
+  timestamp: number // ms
+  hash: string
+  status: 'Completed' | 'Pending'
+  riskLevel: string
+}
+
+export function useTransactionHistory(userAddress?: `0x${string}`) {
+  const publicClient = usePublicClient()
+
+  return useQuery({
+    queryKey: ['transactionHistory', userAddress],
+    queryFn: async () => {
+      if (!userAddress || !publicClient) return []
+
+      // Define events
+      const depositEvent = parseAbiItem('event DepositQueued(address indexed user, uint8 indexed riskLevel, uint256 amount, uint256 nextBatchTime)')
+      const withdrawEvent = parseAbiItem('event WithdrawQueued(address indexed user, uint8 indexed riskLevel, uint256 shares, uint256 nextBatchTime)')
+      const claimSharesEvent = parseAbiItem('event DepositClaimed(address indexed user, uint8 indexed riskLevel, uint256 shares)')
+      const claimUSDCEvent = parseAbiItem('event WithdrawClaimed(address indexed user, uint8 indexed riskLevel, uint256 assets)')
+
+      // Fetch logs in parallel
+      const [deposits, withdraws, claimedShares, claimedUSDC] = await Promise.all([
+        publicClient.getLogs({
+          address: CONTRACTS.ROUTER as `0x${string}`,
+          event: depositEvent,
+          args: { user: userAddress },
+          fromBlock: 'earliest'
+        }),
+        publicClient.getLogs({
+          address: CONTRACTS.ROUTER as `0x${string}`,
+          event: withdrawEvent,
+          args: { user: userAddress },
+          fromBlock: 'earliest'
+        }),
+        publicClient.getLogs({
+          address: CONTRACTS.ROUTER as `0x${string}`,
+          event: claimSharesEvent,
+          args: { user: userAddress },
+          fromBlock: 'earliest'
+        }),
+        publicClient.getLogs({
+          address: CONTRACTS.ROUTER as `0x${string}`,
+          event: claimUSDCEvent,
+          args: { user: userAddress },
+          fromBlock: 'earliest'
+        })
+      ])
+
+      // Combine and format
+      const allLogs = [
+        ...deposits.map(log => ({ ...log, type: 'Deposit' as TransactionType, amount: log.args.amount, risk: log.args.riskLevel })),
+        ...withdraws.map(log => ({ ...log, type: 'Withdraw' as TransactionType, amount: log.args.shares, risk: log.args.riskLevel })),
+        ...claimedShares.map(log => ({ ...log, type: 'Claim Shares' as TransactionType, amount: log.args.shares, risk: log.args.riskLevel })),
+        ...claimedUSDC.map(log => ({ ...log, type: 'Claim USDC' as TransactionType, amount: log.args.assets, risk: log.args.riskLevel }))
+      ]
+
+      // Sort by block number descending
+      allLogs.sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
+
+      // Take top 8
+      const recentLogs = allLogs.slice(0, 8)
+
+      // Fetch timestamps for these blocks
+      const historyItems = await Promise.all(recentLogs.map(async (log) => {
+        const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
+
+        const riskMap = ['Conservative', 'Balanced', 'Aggressive']
+        const riskLevel = riskMap[log.risk || 0] || 'Unknown'
+
+        return {
+          type: log.type,
+          amount: formatUnits(log.amount || BigInt(0), 6), // Assuming 6 decimals for USDC and Shares (usually 18 but let's stick to 6 for simplicity or check vault decimals)
+          // Note: Vault shares usually 18 decimals, USDC 6. 
+          // For MVP let's assume 6 for USDC and 18 for Shares? 
+          // Actually Vault shares in this system seem to be 18 decimals usually.
+          // Let's check: Vault is ERC4626, usually 18. USDC is 6.
+          // Adjusting:
+          // Deposit: USDC (6)
+          // Withdraw: Shares (18) -> Wait, withdraw input is shares.
+          // Claim Shares: Shares (18)
+          // Claim USDC: USDC (6)
+
+          // Refined formatting:
+          formattedAmount: (log.type === 'Deposit' || log.type === 'Claim USDC')
+            ? formatUnits(log.amount || BigInt(0), 6)
+            : formatUnits(log.amount || BigInt(0), 18),
+
+          timestamp: Number(block.timestamp) * 1000,
+          hash: log.transactionHash,
+          status: 'Completed' as const,
+          riskLevel
+        }
+      }))
+
+      return historyItems.map(item => ({
+        ...item,
+        amount: item.formattedAmount // Remap to match interface
+      }))
+    },
+    enabled: !!userAddress && !!publicClient,
+    staleTime: 30_000
+  })
 }

@@ -10,10 +10,12 @@ import {
   useVaultTotalAssets,
   useTotalPendingDeposits,
   useTotalPendingWithdraws,
-  useVaultAPY,
+  useVaultWeightedAPY,
   useUserVaultShares,
   useFormatTokenAmount,
-  useVaultAddress
+  useVaultAddress,
+  useVaultStrategyDistribution,
+  useNextBatchTime
 } from "@/hooks/useContracts"
 import { formatUnits } from "viem"
 
@@ -30,8 +32,11 @@ export function VaultCard({ vaultType, onDeposit }: VaultCardProps) {
   const { data: totalAssets } = useVaultTotalAssets(vaultAddress)
   const { data: pendingDeposits } = useTotalPendingDeposits(vaultType)
   const { data: pendingWithdraws } = useTotalPendingWithdraws(vaultType)
-  const { data: apy } = useVaultAPY(vaultType)
+  const { data: apy } = useVaultWeightedAPY(vaultType)
   const { data: userShares } = useUserVaultShares(address, vaultAddress)
+
+  const { data: strategies } = useVaultStrategyDistribution(vaultAddress)
+  const { data: nextBatchTime } = useNextBatchTime(vaultType)
 
   console.log(`[VaultCard] ${vaultType}:`, {
     vaultAddress,
@@ -70,6 +75,13 @@ export function VaultCard({ vaultType, onDeposit }: VaultCardProps) {
       case "orange":
         return "from-orange-500 to-red-500"
     }
+  }
+
+  const getProtocolColor = (name: string) => {
+    const lowerName = name.toLowerCase()
+    if (lowerName.includes('aave')) return { text: 'text-blue-400', bg: 'from-blue-500 to-cyan-500' }
+    if (lowerName.includes('compound')) return { text: 'text-emerald-400', bg: 'from-emerald-500 to-teal-500' }
+    return { text: 'text-gray-400', bg: 'from-gray-500 to-slate-500' }
   }
 
   return (
@@ -116,21 +128,30 @@ export function VaultCard({ vaultType, onDeposit }: VaultCardProps) {
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs text-white/60 font-medium">Protocol Allocation</span>
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-white/80">Aave V3</span>
-            <span className="text-white font-mono">{config.allocation.aave}%</span>
-          </div>
-          <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: `${config.allocation.aave}%` }} />
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-white/80">Compound V3</span>
-            <span className="text-white font-mono">{config.allocation.compound}%</span>
-          </div>
-          <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500" style={{ width: `${config.allocation.compound}%` }} />
-          </div>
+        <div className="space-y-3">
+          {strategies && strategies.length > 0 ? (
+            strategies.map((strategy, index) => {
+              const colors = getProtocolColor(strategy.name)
+              const amount = parseFloat(formatUnits(strategy.balance, 6))
+
+              return (
+                <div key={index} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-white/80">{strategy.name}</span>
+                    <span className="text-white font-mono">${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${colors.bg}`}
+                      style={{ width: `${strategy.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            <div className="text-xs text-white/40 italic">No funds deployed</div>
+          )}
         </div>
       </div>
 
@@ -156,18 +177,23 @@ export function VaultCard({ vaultType, onDeposit }: VaultCardProps) {
         </div>
       </div>
 
-      {userDeposit > 0 && (
+      {/* {userDeposit > 0 && (
         <div className="mb-4">
           <div className="rounded-xl p-3" style={{ background: "rgba(255, 255, 255, 0.02)" }}>
             <div className="text-xs text-white/50 mb-1">Your Total Deposit</div>
             <div className="text-base font-bold text-white font-mono">${userDeposit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Batch Countdown */}
       <div className="mb-6 p-3 rounded-xl" style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.1)" }}>
-        <BatchCountdown variant="compact" showIcon={true} className="justify-center" />
+        <BatchCountdown
+          variant="compact"
+          showIcon={true}
+          className="justify-center"
+          targetDate={nextBatchTime ? new Date(Number(nextBatchTime) * 1000) : undefined}
+        />
       </div>
 
       {/* Action Button */}
