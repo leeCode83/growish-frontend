@@ -8,29 +8,40 @@ interface BatchCountdownProps {
   variant?: "default" | "compact" | "large"
   showIcon?: boolean
   className?: string
+  targetDate?: Date
 }
 
-export function BatchCountdown({ variant = "default", showIcon = true, className = "" }: BatchCountdownProps) {
+export function BatchCountdown({ variant = "default", showIcon = true, className = "", targetDate }: BatchCountdownProps) {
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Set initial time on mount to avoid hydration mismatch
     setIsMounted(true)
-    setTimeLeft(getTimeUntilNextBatch())
+
+    const calculateTimeLeft = () => {
+      if (targetDate) {
+        const now = new Date()
+        const diff = targetDate.getTime() - now.getTime()
+        return diff > 0 ? diff : 0
+      }
+      return getTimeUntilNextBatch()
+    }
+
+    // Set initial time
+    setTimeLeft(calculateTimeLeft())
 
     // Update countdown every second
     const interval = setInterval(() => {
-      setTimeLeft(getTimeUntilNextBatch())
+      setTimeLeft(calculateTimeLeft())
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [targetDate])
 
   // Show placeholder during SSR to avoid hydration mismatch
   if (!isMounted || timeLeft === null) {
     const placeholder = "Loading..."
-    
+
     if (variant === "compact") {
       return (
         <div className={`flex items-center gap-1.5 text-sm ${className}`}>
